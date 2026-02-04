@@ -10,23 +10,20 @@ START_DATE = date(2026, 2, 4)
 
 try:
     # 1. THE MAGIC TRICK (Bypass Spam Filter)
-    # We add a random "byte" to the end of the file.
-    # This changes the digital fingerprint so Instagram thinks it's new.
     print("✨ Applying magic fix to video...")
     with open("video.mp4", "ab") as f:
-        f.write(os.urandom(1)) # Adds 1 byte of invisible data
+        f.write(os.urandom(1))
 
-    # 2. Human Delay (Random Wait)
-    # Waits between 10 to 60 minutes
+    # 2. Human Delay
     delay = random.randint(10, 60)
     print(f"⏳ Waiting {delay} minutes to look human...")
     time.sleep(delay * 60)
 
-    # 3. Calculate Day Number
+    # 3. Calculate Day
     today = date.today()
     day_count = (today - START_DATE).days + 1
     
-    # 4. Clean Caption
+    # 4. Caption
     caption_text = (
         f"Day {day_count}: The Daily Grind 🚀\n\n"
         f"Consistency is everything. Follow @MacBookm4daily\n\n"
@@ -47,7 +44,13 @@ try:
         path="video.mp4",
         caption=caption_text
     )
-    print(f"✅ Success! Video is live. Code: {media.code}")
+    
+    # 7. GENERATE LINK
+    shortcode = media.code
+    url = f"https://www.instagram.com/reel/{shortcode}/"
+    
+    print(f"✅ Success! Video is live.")
+    print(f"🔗 CLICK HERE TO WATCH: {url}")
 
 except Exception as e:
     print(f"❌ Error: {e}")
