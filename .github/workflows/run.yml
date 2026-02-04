@@ -1,0 +1,24 @@
+name: Daily Video Upload
+
+on:
+  workflow_dispatch:      # Button to run it manually (for testing)
+  schedule:
+    - cron: '30 14 * * *' # Runs automatically at 2:30 PM UTC (8:00 PM IST)
+
+jobs:
+  daily-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Instagrapi
+        run: pip install instagrapi
+
+      - name: Run Bot
+        run: python main.py
