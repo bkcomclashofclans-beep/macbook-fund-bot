@@ -15,8 +15,9 @@ try:
     with open("video.mp4", "ab") as f:
         f.write(os.urandom(1))
 
-    # 2. SHORT HUMAN DELAY (1-10 mins)
-    delay = random.randint(1, 10)
+    # 2. SHORT HUMAN DELAY (1-5 mins)
+    # I set this to short so you don't have to wait long to test it
+    delay = random.randint(1, 5)
     print(f"⏳ Waiting {delay} minutes to look human...")
     time.sleep(delay * 60)
 
@@ -31,21 +32,26 @@ try:
         f"#day{day_count} #macbookfund #grind #kerala #india #coding #motivation #viral"
     )
 
-    # 4. ROBUST LOGIN (The Fix)
+    # 4. MANUAL LOGIN (The Fix)
     print("Logging in...")
     cl = Client()
     
+    # WE REMOVED cl.load_settings() BECAUSE IT WAS CAUSING THE ERROR
+    
     if os.path.exists("session.json"):
-        cl.load_settings("session.json")
-        
-        # MANUAL FIX: Read the session ID directly from the file
+        # We read the file OURSELVES using standard Python
         with open("session.json", "r") as f:
             data = json.load(f)
         
-        # Extract sessionid safely
+        # We extract the ID safely
         session_id = data.get("authorization_data", {}).get("sessionid") or data.get("cookies", {}).get("sessionid")
             
         if session_id:
+            # We assume the ID is URL encoded, so we decode it just in case
+            # (Usually raw paste works, but this is safer)
+            from urllib.parse import unquote
+            session_id = unquote(session_id)
+            
             cl.login_by_sessionid(session_id)
             print("✅ Session loaded and verified")
         else:
