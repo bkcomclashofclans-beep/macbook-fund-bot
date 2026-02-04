@@ -3,6 +3,7 @@ from datetime import date
 import os
 import time
 import random
+import json
 
 # --- SETTINGS ---
 START_DATE = date(2026, 2, 4) 
@@ -14,16 +15,15 @@ try:
     with open("video.mp4", "ab") as f:
         f.write(os.urandom(1))
 
-    # 2. Human Delay
-    delay = random.randint(10, 60)
+    # 2. SHORT HUMAN DELAY (1-10 mins)
+    delay = random.randint(1, 10)
     print(f"⏳ Waiting {delay} minutes to look human...")
     time.sleep(delay * 60)
 
-    # 3. Calculate Day
+    # 3. CALCULATE DAY
     today = date.today()
     day_count = (today - START_DATE).days + 1
     
-    # 4. Caption
     caption_text = (
         f"Day {day_count}: The Daily Grind 🚀\n\n"
         f"Consistency is everything. Follow @MacBookm4daily\n\n"
@@ -31,21 +31,38 @@ try:
         f"#day{day_count} #macbookfund #grind #kerala #india #coding #motivation #viral"
     )
 
-    # 5. Login
+    # 4. ROBUST LOGIN (The Fix)
     print("Logging in...")
     cl = Client()
+    
     if os.path.exists("session.json"):
         cl.load_settings("session.json")
-        cl.login_by_sessionid(cl.request_session.cookies['sessionid']) 
+        
+        # MANUAL FIX: Read the session ID directly from the file
+        with open("session.json", "r") as f:
+            data = json.load(f)
+        
+        # Extract sessionid safely
+        session_id = data.get("authorization_data", {}).get("sessionid") or data.get("cookies", {}).get("sessionid")
+            
+        if session_id:
+            cl.login_by_sessionid(session_id)
+            print("✅ Session loaded and verified")
+        else:
+            print("❌ Could not find session ID in file")
+            exit()
+    else:
+        print("❌ session.json not found!")
+        exit()
     
-    # 6. Upload
+    # 5. UPLOAD
     print("Uploading video...")
     media = cl.video_upload(
         path="video.mp4",
         caption=caption_text
     )
     
-    # 7. GENERATE LINK
+    # 6. GENERATE LINK
     shortcode = media.code
     url = f"https://www.instagram.com/reel/{shortcode}/"
     
