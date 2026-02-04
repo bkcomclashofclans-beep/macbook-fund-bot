@@ -15,7 +15,7 @@ try:
     with open("video.mp4", "ab") as f:
         f.write(os.urandom(1))
 
-    # 2. SHORT DELAY (1 minute for testing)
+    # 2. SHORT DELAY (Testing: 1 minute)
     print("⏳ Waiting 1 minute...")
     time.sleep(60)
 
@@ -28,32 +28,47 @@ try:
         f"#day{day_count} #macbookfund #grind #kerala #india #coding #motivation"
     )
 
-    # 4. MANUAL COOKIE INJECTION (Bypasses the crash)
-    print("Injecting cookies...")
+    # 4. SETTINGS INJECTION (The Official Fix)
+    print("Configuring bot...")
     cl = Client()
     
-    # We set the cookies directly instead of using the login function
-    # (Values taken from your Screenshot #1)
+    # We manually build the settings dictionary 
+    # This mimics loading the JSON file, but without the file errors
     
-    # 1. User ID
-    cl.request.cookies.set("ds_user_id", "80121861323", domain=".instagram.com")
-    
-    # 2. CSRF Token
-    cl.request.cookies.set("csrftoken", "0ll1LrZvtudPjAvvB4vERn", domain=".instagram.com")
-    
-    # 3. Session ID (Decoded)
     raw_session = "80121861323%3AFSMEyXAUIwrhFr%3A6%3AAYi7h1W-76-NuppibxvebPa7-5nFSQ4W4YolMf1tbQ"
-    cl.request.cookies.set("sessionid", unquote(raw_session), domain=".instagram.com")
-
-    print("✅ Cookies injected. Attempting upload...")
+    decoded_session = unquote(raw_session)
+    
+    settings = {
+        "authorization_data": {
+            "ds_user_id": "80121861323",
+            "sessionid": decoded_session
+        },
+        "cookies": {
+            "ds_user_id": "80121861323",
+            "csrftoken": "0ll1LrZvtudPjAvvB4vERn",
+            "sessionid": decoded_session
+        },
+        "country": "IN",
+        "country_code": 91,
+        "locale": "en_US",
+        "timezone_offset": 19800
+    }
+    
+    # Load these settings directly
+    cl.set_settings(settings)
+    
+    # Verify login just to be sure
+    cl.login_by_sessionid(decoded_session)
+    print("✅ Login Configured Successfully")
 
     # 5. UPLOAD
+    print("Uploading video...")
     media = cl.video_upload(path="video.mp4", caption=caption)
     
     # 6. LINK
     print(f"✅ DONE! Watch here: https://www.instagram.com/reel/{media.code}/")
 
 except Exception as e:
-    # This will print the FULL error if something goes wrong
+    # This prints the full detailed error if it fails
     import traceback
     print(traceback.format_exc())
